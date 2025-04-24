@@ -1,1 +1,1 @@
-![test](aru_laptop.gif)
+![test](https://media.tenor.com/dc1V2uGIXgAAAAAj/seseren-blue-archive.gif)
