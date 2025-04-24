@@ -1,6 +1,1 @@
-<p align="left"> 
-    <img src="aru_laptop.gif" width="400"/> 
-</p>
-
-# I write stuff
-This repo is just a collection of random scripts I've created over time that I believe are useful.
+![test](aru_laptop.gif)
