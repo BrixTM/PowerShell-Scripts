@@ -1,0 +1,5 @@
+Install:
+powershell.exe -windowstyle hidden -executionpolicy bypass .\Function_New-DekstopShortcut.ps1
+
+Uninstall:
+powershell.exe -command if(test-path ([Environment]::GetFolderPath('Desktop')+'\shortcut.lnk')) {Remove-Item ([Environment]::GetFolderPath('Desktop')+'\shortcut.lnk')} exit 0
