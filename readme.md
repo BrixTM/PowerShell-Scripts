@@ -1,5 +1,5 @@
 <p align="left"> 
-    <img src="https://media.tenor.com/dc1V2uGIXgAAAAAj/seseren-blue-archive.gif" width="400"/> 
+    <img src="aru_laptop.gif" width="400"/> 
 </p>
 
 # I write stuff
