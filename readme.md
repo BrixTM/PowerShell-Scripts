@@ -3,5 +3,5 @@
 </p>
 
 # PowerShell Scripts
-This repo is just a collection of random scripts I've created over time that I thin are useful.
+This repo is just a collection of random scripts I've created over time that I think are useful.
 Will probably update this from time to time with more random stuff.
