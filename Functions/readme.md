@@ -7,7 +7,7 @@
 </p>
 
 # Functions
-This folder contains a bunch of functions I've made, some may be apart of other scripts in the parent Directory.
+This folder contains a bunch of functions I've made, some may be apart of other scripts in the parent Directory. I should update this when I add new functions with a description of them.
 
 ##### Get-ManagedDeviceDetails
 - Used to gather information about devices from Intune and Azure using mgraph, this required the mgraph and mgraph beta PS modules to be present.
