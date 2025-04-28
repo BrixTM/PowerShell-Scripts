@@ -6,22 +6,7 @@
     <img src="https://media.tenor.com/dc1V2uGIXgAAAAAj/seseren-blue-archive.gif" width="100"/> 
 </p>
 
-# PowerShell Scripts
-This repo is just a collection of random scripts and functions I've created over time that I think are useful or have parts of them which are useful. Will probably update this from time to time with more random stuff.
-
-## Scripts
-All Folders are scripts, this may be one individual or a set of them used in something like an intune remediation or win32 package. Some of these may be used in tandem with functions in the function folder so keep an eye on the documentation for that. 
-
-##### Install Print Server Printers
-- Was initially a project wherein we migrated local printers to a print server for specific sites and installed the printers on the machines as an intune remediation.
-- This script was converted into a fucntion for ease of use, I would recommend using that over these scripts, the remediation may still be useful.
-
-##### New Desktop Shortcut (Uses Function)
-- Useful set of scripts for creating win32 packages for shortcuts on users machines.
-- Contains the Detection and uninstall/Install Commands, when using these make sure to change the Shortcut name to your one.
-- Function in the function folder for the actuall meat of this.
-
-## Functions
+# Functions
 This folder contains a bunch of functions I've made, some may be apart of other scripts in the parent Directory. I should update this when I add new functions with a description of them.
 
 ##### Get-ManagedDeviceDetails
