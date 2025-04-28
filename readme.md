@@ -19,7 +19,7 @@ All Folders are scripts, this may be one individual or a set of them used in som
 ##### New Desktop Shortcut (Uses Function)
 - Useful set of scripts for creating win32 packages for shortcuts on users machines.
 - Contains the Detection and uninstall/Install Commands, when using these make sure to change the Shortcut name to your one.
-- Function in the function folder for the actuall meat of this.
+- Function in the function folder for the actual meat of this.
 
 ## Functions
 This folder contains a bunch of functions I've made, some may be apart of other scripts in the parent Directory. I should update this when I add new functions with a description of them.
@@ -40,3 +40,8 @@ This folder contains a bunch of functions I've made, some may be apart of other 
 - There is a folder for this function in the Parent directory which contains earlier versions before I turned the app into a function, was used as an intune remediation.
 - I need to comment this because I was lazy
 - I also need to add the ability to exlude certain subnets from the search as I did in the original script. 
+
+##### New-Shortcut
+- Used to create a new shortcut for a User or System.
+- Can be placed on the Users Start Menu and Desktop as well as System Start Menu and Desktop.
+- Icons are stored in user or default appdata, change this if you want to store it in a different location. The folders should auto create as part of the function
