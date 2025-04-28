@@ -23,4 +23,5 @@ This folder contains a bunch of functions I've made, some may be apart of other 
 - Can filter out specific printers, for example if you use papercut you may want to filter out Follow Me printers.
 - Will check if a printer is already installed and if there are no network printers on that subnet.
 - There is a folder for this function in the Parent directory which contains earlier versions before I turned the app into a function, was used as an intune remediation.
-- I also need to comment this because I was lazy
+- I need to comment this because I was lazy
+- I also need to add the ability to exlude certain subnets from the search as I did in the original script. 
