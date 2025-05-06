@@ -112,4 +112,4 @@ $shortcut.Save()
 }
 
 #Full command to create the shortcut, this can be ommited if you just want to load the function elsewhere but should be filled and uncommented for intunewim files. 
-New-Shortcut -Name Test -Path "c:\Temp" -Desktop SystemStartMenu -Icon ico -Iconpath '.\Coupa.ico'
+New-Shortcut -Name Test -Path "c:\Temp" -Desktop SystemStartMenu -Icon ico -Iconpath '.\shortcut.ico'
