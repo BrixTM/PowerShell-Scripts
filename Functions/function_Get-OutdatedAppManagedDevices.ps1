@@ -1,4 +1,4 @@
-function Get-OutdatedAppManagedDevices
+function Get-OutdatedAppDevices
 {
     [CmdletBinding()]
     param (
@@ -12,8 +12,8 @@ function Get-OutdatedAppManagedDevices
     )
 
     #These variable are here if you need to test the function
-    #$AppDisplayName = 'Zoom'
-    #$AppVersion = '5.17'
+    #$AppDisplayName = 'Google Chrome'
+    #$AppVersion = '137.0.7151.69'
     #$AppPlatform = 'Windows' #Note - Only accepts one of the above validateset arguments
 
     #Gets all discovered applications and gets the details of the specified group
@@ -34,6 +34,7 @@ function Get-OutdatedAppManagedDevices
 
     #Gets all the devices apart of the detected apps 
     ForEach ($AppInstall in $FilteredInstall) {
-        Get-MgDeviceManagementDetectedAppManagedDevice -DetectedAppId $AppInstall.id -ErrorAction Stop 
+        Get-MgDeviceManagementDetectedAppManagedDevice -DetectedAppId $AppInstall.id -All
+        Start-Sleep 5
     }
 }
