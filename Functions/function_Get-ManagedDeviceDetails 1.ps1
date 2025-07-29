@@ -24,7 +24,6 @@ function Get-ManagedDeviceDetails {
         Get Various Device Details from Intune and Azure.
 
         .DESCRIPTION
-        Version 4 (22/04/25)
         This script searches through Intune Azure and the mgraph API to gather various details about devices, it has the ability to search using
         Hostnames, IntuneID's, AzureID's and ObjectID's. This requires the following Permissions to mgraph which the function will request.
         - User.Read.All 
@@ -99,7 +98,7 @@ function Get-ManagedDeviceDetails {
             switch ($thingy.AzureAdDeviceId) {
                 "00000000-0000-0000-0000-000000000000" { $thingyAzure = $null }
                 Default {
-                    $ThingyAzure = Get-MgDeviceByDeviceId -DeviceId $thingy.AzureAdDeviceId
+                    $ThingyAzure = get-entradevice -Filter "DeviceID eq '$($thingy.AzureAdDeviceId)'"
                 }
             }
             #Gathers hardware info of the devices
@@ -113,7 +112,7 @@ function Get-ManagedDeviceDetails {
                 Hostname         = $thingyIntune.DeviceName
                 EnrolmentType    = $thingyIntune.DeviceEnrollmentType
                 WiredIPV4        = if ($ThingyHardware.hardwareInformation.wiredIPv4Addresses) { ($ThingyHardware.hardwareInformation.wiredIPv4Addresses).replace("{", "") } else { "Empty" }
-                WirelessIPV4     = if ($ThingyHardware.hardwareInformation.ipAddressV4) { ($ThingyHardware.hardwareInformation.ipAddressV4).replace("{", "") } else { "Empty" }
+                WirelessIPV4     = if ($ThingyHardware.hardwareInformation.ipAddressV4.length -gt 4) {($ThingyHardware.hardwareInformation.ipAddressV4).replace("{", "") } else { "Empty" }
                 OperatingSystem  = $thingyIntune.OperatingSystem
                 OSVersion        = $thingyIntune.OSVersion
                 Model            = $thingyIntune.Model
@@ -123,9 +122,10 @@ function Get-ManagedDeviceDetails {
                 PrimaryUser      = $thingyIntune.UserDisplayName
                 PrimaryUserEmail = $thingyIntune.EmailAddress
                 UserID           = $thingyIntune.UserId
-                LastSync         = $thingyIntune.LastSyncDateTime 
+                LastSync         = $thingyIntune.LastSyncDateTime
+                EnrolledDate     = $thingyIntune.EnrolledDateTime
             }
-            
+            Clear-Variable thingy, thingyIntune, ThingyHardware, thingyAzure
         }
     }
     else {
@@ -144,7 +144,7 @@ function Get-ManagedDeviceDetails {
                             #Uses the gathered AzureID from Intune to search the devices Azure Details
                             switch ($thingyIntune.AzureAdDeviceId) {
                                 "00000000-0000-0000-0000-000000000000" { $thingyAzure = $null }
-                                Default { $ThingyAzure = Get-MgDeviceByDeviceId -DeviceId $thingyIntune.AzureAdDeviceId }
+                                Default { $ThingyAzure = get-entradevice -Filter "DeviceID eq '$($thingyIntune.AzureAdDeviceId)'" }
                             }
                             #Queries mgraph API for hardware information
                             $ThingyHardware = Invoke-MgGraphRequest -Method GET -Uri ("https://graph.microsoft.com/beta/deviceManagement/managedDevices/$($thingyIntune.Id)" + '?$select=hardwareinformation')
@@ -156,14 +156,14 @@ function Get-ManagedDeviceDetails {
                         #Uses the gathered AzureID from Intune to search the devices Azure Details
                         switch ($thingyIntune.AzureAdDeviceId) {
                             "00000000-0000-0000-0000-000000000000" { $thingyAzure = $null }
-                            Default { $ThingyAzure = Get-MgDeviceByDeviceId -DeviceId $thingyIntune.AzureAdDeviceId }
+                            Default { $ThingyAzure = get-entradevice -Filter "DeviceID eq '$($thingyIntune.AzureAdDeviceId)'" }
                         }
                         #Queries mgraph API for hardware information
                         $ThingyHardware = Invoke-MgGraphRequest -Method GET -Uri ("https://graph.microsoft.com/beta/deviceManagement/managedDevices/$($thingyIntune.Id)" + '?$select=hardwareinformation')
                     }
                     'AzureID' {
                         #Searches Azure for devices that match the specific AzureID using the $searchHeader Specified
-                        $ThingyAzure = Get-MgDeviceByDeviceId -DeviceId $thingy.$SearchHeader
+                        $ThingyAzure = get-entradevice -Filter "DeviceID eq '$($thingy.$SearchHeader)'"
                         #Uses the gathered AzureID from Azure to search the devices Intune Details
                         $thingyIntune = Get-MgBetaDeviceManagementManagedDevice -Filter "AzureAdDeviceId eq '$($ThingyAzure.DeviceId)'"
                         #Queries mgraph API for hardware information
@@ -188,7 +188,7 @@ function Get-ManagedDeviceDetails {
                             #Uses the gathered AzureID from Intune to search the devices Azure Details
                             switch ($thingyIntune.AzureAdDeviceId) {
                                 "00000000-0000-0000-0000-000000000000" { $thingyAzure = $null }
-                                Default { $ThingyAzure = Get-MgDeviceByDeviceId -DeviceId $thingyIntune.AzureAdDeviceId }
+                                Default { $ThingyAzure = get-entradevice -Filter "DeviceID eq '$($thingyIntune.AzureAdDeviceId)'" }
                             }
                             #Queries mgraph API for hardware information
                             $ThingyHardware = Invoke-MgGraphRequest -Method GET -Uri ("https://graph.microsoft.com/beta/deviceManagement/managedDevices/$($thingyIntune.Id)" + '?$select=hardwareinformation')
@@ -205,12 +205,13 @@ function Get-ManagedDeviceDetails {
                             #Uses the gathered AzureID from Intune to search the devices Azure Details
                             switch ($thingyIntune.AzureAdDeviceId) {
                                 "00000000-0000-0000-0000-000000000000" { $thingyAzure = $null }
-                                Default { $ThingyAzure = Get-MgDeviceByDeviceId -DeviceId $thingyIntune.AzureAdDeviceId }
+                                Default { $ThingyAzure = get-entradevice -Filter "DeviceID eq '$($thingyIntune.AzureAdDeviceId)'" }
                             }
                             #Queries mgraph API for hardware information
                             $ThingyHardware = Invoke-MgGraphRequest -Method GET -Uri ("https://graph.microsoft.com/beta/deviceManagement/managedDevices/$($thingyIntune.Id)" + '?$select=hardwareinformation')
                         }
                     }
+
                 }
                 if ($null -ne $thingyIntune) {
                     Write-Progress -Activity "Gathering Device Details" -status "$($thingyIntune.DeviceName)"
@@ -235,6 +236,7 @@ function Get-ManagedDeviceDetails {
                         PrimaryUserEmail = $thingyIntune.EmailAddress
                         UserID           = $thingyIntune.UserId
                         LastSync         = $thingyIntune.LastSyncDateTime
+                        EnrolledDate     = $thingyIntune.EnrolledDateTime
                     }
                 }
                 else {
@@ -260,6 +262,7 @@ function Get-ManagedDeviceDetails {
                         PrimaryUserEmail = $Null
                         UserID           = $Null
                         LastSync         = $Null
+                        EnrolledDate     = $Null
                     }
                 }
                 #Clears variables each iteration to prevent objects containing incorrect data if they are null
