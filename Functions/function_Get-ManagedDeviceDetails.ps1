@@ -8,7 +8,7 @@ function Get-ManagedDeviceDetails {
         #Used to specify the Variable where the details on devices is held within Powershell
         [PSCustomObject]$SearchVariable,
         [Parameter(Mandatory, ParameterSetName = 'Specific')]
-        [validateset('Hostname', 'IntuneID', 'AzureID', 'ObjectID', 'SerialNo', 'IMEI')]
+        [validateset('Hostname', 'IntuneID', 'AzureID', 'ObjectID', 'SerialNo', 'IMEI','Phone')]
         #Used to specify the type of search to perform based on the Hostname, IntuneID, AzureID or ObjectID
         [String]$SearchType,
         [Parameter(Mandatory, ParameterSetName = 'Specific')]
@@ -112,13 +112,14 @@ function Get-ManagedDeviceDetails {
                 Hostname         = $thingyIntune.DeviceName
                 EnrolmentType    = $thingyIntune.DeviceEnrollmentType
                 WiredIPV4        = if ($ThingyHardware.hardwareInformation.wiredIPv4Addresses) { ($ThingyHardware.hardwareInformation.wiredIPv4Addresses).replace("{", "") } else { "Empty" }
-                WirelessIPV4     = if ($ThingyHardware.hardwareInformation.ipAddressV4.length -gt 4) {($ThingyHardware.hardwareInformation.ipAddressV4).replace("{", "") } else { "Empty" }
+                WirelessIPV4     = if ($ThingyHardware.hardwareInformation.ipAddressV4.length -gt 4) { ($ThingyHardware.hardwareInformation.ipAddressV4).replace("{", "") } else { "Empty" }
                 OperatingSystem  = $thingyIntune.OperatingSystem
                 OSVersion        = $thingyIntune.OSVersion
                 Model            = $thingyIntune.Model
                 SerialNumber     = $thingyIntune.SerialNumber
                 Manufacturer     = $thingyIntune.Manufacturer
                 IMEI             = if ($thingyIntune.IMEI) { $thingyIntune.IMEI } else { "N/A" }
+                PhoneNumber      = if ($thingyIntune.PhoneNumber) { $thingyIntune.PhoneNumber } else { "N/A" }
                 PrimaryUser      = $thingyIntune.UserDisplayName
                 PrimaryUserEmail = $thingyIntune.EmailAddress
                 UserID           = $thingyIntune.UserId
@@ -211,6 +212,23 @@ function Get-ManagedDeviceDetails {
                             $ThingyHardware = Invoke-MgGraphRequest -Method GET -Uri ("https://graph.microsoft.com/beta/deviceManagement/managedDevices/$($thingyIntune.Id)" + '?$select=hardwareinformation')
                         }
                     }
+                    'Phone' {
+                        #Searches Intune for devices that match the specific Hostname using the $searchHeader Specified
+                        $thingyIntune = Get-MgBetaDeviceManagementManagedDevice -Filter "PhoneNumber eq '$($Thingy.$SearchHeader)'"
+                        if ($thingyIntune) {
+                            if ($thingyIntune.count -gt 1) {
+                                $thingyIntune = $thingyIntune | Sort-Object -Property [date]LastSyncDateTime -Descending | Select-Object -First 1
+                                Write-Warning "Multiple Devices found for $($Thingy.$SearchHeader). Returning Device with latest Sync Date, please validate manually."
+                            }
+                            #Uses the gathered AzureID from Intune to search the devices Azure Details
+                            switch ($thingyIntune.AzureAdDeviceId) {
+                                "00000000-0000-0000-0000-000000000000" { $thingyAzure = $null }
+                                Default { $ThingyAzure = get-entradevice -Filter "DeviceID eq '$($thingyIntune.AzureAdDeviceId)'" }
+                            }
+                            #Queries mgraph API for hardware information
+                            $ThingyHardware = Invoke-MgGraphRequest -Method GET -Uri ("https://graph.microsoft.com/beta/deviceManagement/managedDevices/$($thingyIntune.Id)" + '?$select=hardwareinformation')
+                        }
+                    }
 
                 }
                 if ($null -ne $thingyIntune) {
@@ -232,6 +250,7 @@ function Get-ManagedDeviceDetails {
                         SerialNumber     = $thingyIntune.SerialNumber
                         Manufacturer     = $thingyIntune.Manufacturer
                         IMEI             = if ($thingyIntune.IMEI) { $thingyIntune.IMEI } else { "N/A" }
+                        PhoneNumber      = if ($thingyIntune.PhoneNumber) { $thingyIntune.PhoneNumber } else { "N/A" }
                         PrimaryUser      = $thingyIntune.UserDisplayName
                         PrimaryUserEmail = $thingyIntune.EmailAddress
                         UserID           = $thingyIntune.UserId
@@ -258,6 +277,7 @@ function Get-ManagedDeviceDetails {
                         SerialNumber     = $Null
                         Manufacturer     = $Null
                         IMEI             = $Null
+                        PhoneNumber      = $Null
                         PrimaryUser      = $Null
                         PrimaryUserEmail = $Null
                         UserID           = $Null
@@ -266,7 +286,10 @@ function Get-ManagedDeviceDetails {
                     }
                 }
                 #Clears variables each iteration to prevent objects containing incorrect data if they are null
-                Clear-Variable thingy, thingyIntune, ThingyHardware, thingyAzure
+                if ($thingy){Clear-Variable thingy}
+                if ($ThingyIntune){Clear-Variable ThingyIntune}
+                if ($ThingyHardware){Clear-Variable ThingyHardware}
+                if ($thingyAzure){Clear-Variable thingyAzure}
             }
         }
     } 
